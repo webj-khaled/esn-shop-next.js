@@ -3,11 +3,12 @@
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { FormError } from "@/app/common/form-error.interface";
-import { API_URL } from "@/app/constants/api";
-import { getErrorMessage } from "@/app/util/errors";
+import { FormResponse } from "@/app/common/interfaces/form-response.interface";
+import { API_URL } from "@/app/common/constants/api";
+import { getErrorMessage } from "@/app/common/util/errors";
+import { AUTHENTICATION_COOKIE } from "../auth-cookie";
 
-export default async function login(_prevState: FormError, formData: FormData) {
+export default async function login(_prevState: FormResponse, formData: FormData) {
     const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,7 +26,7 @@ export default async function login(_prevState: FormError, formData: FormData) {
         const token = setCookieHeader.split(";")[0].split("=")[1];
         const cookieStore = await cookies();
         cookieStore.set({
-            name: "Authentication",
+            name: AUTHENTICATION_COOKIE,
             value: token,
             secure: true,
             httpOnly: true,
@@ -35,3 +36,9 @@ export default async function login(_prevState: FormError, formData: FormData) {
 
     redirect("/")
 };
+
+
+
+
+
+

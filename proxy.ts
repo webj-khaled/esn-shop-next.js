@@ -1,22 +1,30 @@
 import { NextRequest } from "next/server";
+import authenticated from "./app/auth/authenticated";
+import { unauthenticatedRoutes } from "./app/common/constants/routes";
 
 const unauthorizedRoutes = ["/auth/login", "/auth/signup"];
 
-export function middleware(request: NextRequest) {
-    console.log("Middleware cookies:", request.cookies.getAll());
-    console.log("Path:", request.nextUrl.pathname);
+export function proxy(request: NextRequest) {
     const auth = request.cookies.get("Authentication")?.value;
 
     if (
         !auth &&
-        !unauthorizedRoutes.some((route) =>
-            request.nextUrl.pathname.startsWith(route)
+        !unauthenticatedRoutes.some((route) =>
+            request.nextUrl.pathname.startsWith(route.path)
         )
     ) {
         return Response.redirect(new URL("/auth/login", request.url));
     }
-}
 
+}
 export const config = {
     matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
 };
+
+
+
+
+
+
+
+
