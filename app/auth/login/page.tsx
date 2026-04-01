@@ -14,7 +14,7 @@ export default function Login() {
                 <TextField
                     error={!!state.error}
                     helperText={state.error}
-                    name="email"
+                    name="identifier"
                     label="Email"
                     variant="outlined"
                     type="email"
@@ -30,6 +30,9 @@ export default function Login() {
                 <Button type="submit" variant="contained">
                     Login
                 </Button>
+                <Link component={NextLink} href="/auth/forgot-password" className="self-center">
+                    Forgot Password?
+                </Link>
                 <Link component={NextLink} href="/auth/signup" className="self-center">
                     Signup
                 </Link>

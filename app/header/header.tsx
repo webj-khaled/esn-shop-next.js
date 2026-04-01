@@ -18,6 +18,7 @@ import { MouseEvent, useContext, useState } from "react";
 import Link from "next/link";
 import { routes, unauthenticatedRoutes } from "../common/constants/routes";
 import { useRouter } from "next/navigation";
+import { CartContext } from "../cart/cart-context";
 
 interface HeaderProps {
     logout: () => Promise<void>;
@@ -25,6 +26,7 @@ interface HeaderProps {
 
 export default function Header({ logout }: HeaderProps) {
     const isAuthenticated = useContext(AuthContext);
+    const { totalItems } = useContext(CartContext);
     const router = useRouter();
 
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
@@ -37,7 +39,14 @@ export default function Header({ logout }: HeaderProps) {
         setAnchorElNav(null);
     };
 
-    const pages = isAuthenticated ? routes : unauthenticatedRoutes;
+    const pages = isAuthenticated
+        ? routes
+        : [...routes, ...unauthenticatedRoutes];
+    const navigationPages = pages.map((page) =>
+        page.path === "/cart"
+            ? { ...page, title: totalItems > 0 ? `Cart (${totalItems})` : "Cart" }
+            : page
+    );
 
     return (
         <AppBar position="static">
@@ -93,7 +102,7 @@ export default function Header({ logout }: HeaderProps) {
                                 display: { xs: "block", md: "none" },
                             }}
                         >
-                            {pages.map((page) => (
+                            {navigationPages.map((page) => (
                                 <MenuItem
                                     key={page.title}
                                     onClick={() => {
@@ -128,7 +137,7 @@ export default function Header({ logout }: HeaderProps) {
                         Shoppy
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-                        {pages.map((page) => (
+                        {navigationPages.map((page) => (
                             <Button
                                 key={page.title}
                                 onClick={() => {
@@ -163,7 +172,7 @@ const Settings = ({ logout }: HeaderProps) => {
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                    <Avatar alt="User" />
                 </IconButton>
             </Tooltip>
             <Menu

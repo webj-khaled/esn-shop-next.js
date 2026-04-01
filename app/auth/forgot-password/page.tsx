@@ -1,12 +1,15 @@
 "use client";
 
-import { Button, Link, Stack, TextField } from "@mui/material";
+import { Alert, Button, Link, Stack, TextField } from "@mui/material";
 import NextLink from "next/link";
 import { useActionState } from "react";
-import createUser from "./create-user";
+import startPasswordRecovery from "./start-password-recovery";
 
-export default function Signup() {
-    const [state, formAction] = useActionState(createUser, { error: "" });
+export default function ForgotPasswordPage() {
+    const [state, formAction] = useActionState(startPasswordRecovery, {
+        error: "",
+        success: "",
+    });
 
     return (
         <form action={formAction} className="w-full max-w-xs">
@@ -16,22 +19,16 @@ export default function Signup() {
                     label="Email"
                     variant="outlined"
                     type="email"
-                    helperText={state.error}
+                    helperText={state.error || " "}
                     error={!!state.error}
+                    required
                 />
-                <TextField
-                    name="password"
-                    label="Password"
-                    variant="outlined"
-                    type="password"
-                    helperText={state.error}
-                    error={!!state.error}
-                />
+                {state.success && <Alert severity="success">{state.success}</Alert>}
                 <Button type="submit" variant="contained">
-                    Signup
+                    Send Reset Link
                 </Button>
                 <Link component={NextLink} href="/auth/login" className="self-center">
-                    Login
+                    Back to Login
                 </Link>
             </Stack>
         </form>
