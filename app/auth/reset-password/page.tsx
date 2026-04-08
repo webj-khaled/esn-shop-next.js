@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Button, Link, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Button, Link, Stack, TextField } from "@mui/material";
 import NextLink from "next/link";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -17,7 +17,7 @@ export default function ResetPasswordPage() {
 
     if (!token) {
         return (
-            <Stack spacing={2} className="w-full max-w-xs">
+            <Stack spacing={2} className="w-full">
                 <Alert severity="error">Reset token is missing.</Alert>
                 <Link component={NextLink} href="/auth/forgot-password">
                     Request a new reset link
@@ -27,12 +27,12 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <form action={formAction} className="w-full max-w-xs">
-            <Stack spacing={2}>
+        <form action={formAction} className="w-full">
+            <Stack spacing={2.2}>
                 <input type="hidden" name="token" value={token} />
-                <Typography variant="body2">
+                <Alert severity="info">
                     Use a strong password with upper/lowercase letters, numbers, and symbols.
-                </Typography>
+                </Alert>
                 <TextField
                     name="password"
                     label="New Password"
@@ -50,6 +50,9 @@ export default function ResetPasswordPage() {
                 {state.error && <Alert severity="error">{state.error}</Alert>}
                 {state.success && <Alert severity="success">{state.success}</Alert>}
                 <SubmitButton />
+                <Link component={NextLink} href="/privacy-notice" className="self-center">
+                    Privacy Notice
+                </Link>
                 <Link component={NextLink} href="/auth/login" className="self-center">
                     Back to Login
                 </Link>
@@ -62,7 +65,7 @@ function SubmitButton() {
     const { pending } = useFormStatus();
 
     return (
-        <Button type="submit" variant="contained" disabled={pending}>
+        <Button type="submit" variant="contained" disabled={pending} fullWidth>
             {pending ? "Resetting..." : "Reset Password"}
         </Button>
     );

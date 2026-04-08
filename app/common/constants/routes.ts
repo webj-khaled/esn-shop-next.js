@@ -9,7 +9,7 @@ export const unauthenticatedRoutes = [
     },
 ];
 
-export const routes = [
+export const sharedRoutes = [
     {
         title: "Home",
         path: "/",
@@ -18,8 +18,18 @@ export const routes = [
         title: "Cart",
         path: "/cart",
     },
+];
+
+export const adminRoutes = [
     {
         title: "Orders",
         path: "/orders",
+    },
+];
+
+export const userRoutes = [
+    {
+        title: "My Orders",
+        path: "/my-orders",
     },
 ];

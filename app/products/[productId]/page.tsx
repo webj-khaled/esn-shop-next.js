@@ -1,8 +1,6 @@
-import { Stack, Typography } from "@mui/material";
 import getProduct from "./get-product";
-import Grid from "@mui/material/Grid";
-import Checkout from "@/app/checkout/checkout";
 import { notFound } from "next/navigation";
+import ProductShowcase from "./product-showcase";
 
 type SingleProductProps = {
     params: Promise<{
@@ -17,16 +15,5 @@ export default async function SingleProduct({ params }: SingleProductProps) {
         notFound();
     }
 
-    return (
-        <Grid container marginBottom={"2rem"} rowGap={3}>
-            <Grid size={{ md: 8, xs: 12 }}>
-                <Stack gap={3}>
-                    <Typography variant="h2">{product.name}</Typography>
-                    <Typography>{product.description}</Typography>
-                    <Typography variant="h4">${product.price}</Typography>
-                    <Checkout product={product} />
-                </Stack>
-            </Grid>
-        </Grid>
-    );
+    return <ProductShowcase product={product} />;
 }

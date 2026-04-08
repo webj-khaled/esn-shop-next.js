@@ -4,6 +4,8 @@ export interface OrderHistoryItem {
     id: number;
     productName: string;
     productDescription: string | null;
+    shirtColor: string | null;
+    shirtSize: string | null;
     quantity: number;
     unitAmount: number;
     totalAmount: number;

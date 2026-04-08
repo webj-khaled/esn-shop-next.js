@@ -11,21 +11,33 @@ import AlertTitle from "@mui/material/AlertTitle";
 
 interface CheckoutProps {
     product: Product;
+    selectedColor?: ShirtColor;
+    onColorChange?: (color: ShirtColor) => void;
 }
 
-export default function Checkout({ product }: CheckoutProps) {
+export default function Checkout({ product, selectedColor, onColorChange }: CheckoutProps) {
     const { addItem, totalItems } = useContext(CartContext);
     const router = useRouter();
-    const [color, setColor] = useState<ShirtColor>(product.colors[0]);
+    const [internalColor, setInternalColor] = useState<ShirtColor>(product.colors[0]);
     const [size, setSize] = useState<ShirtSize>(product.sizes[0]);
     const [quantity, setQuantity] = useState(1);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const color = selectedColor ?? internalColor;
 
     const maxQuantity = useMemo(() => {
         return product.stockByColorAndSize[color][size];
     }, [color, size, product]);
 
     const isOutOfStock = maxQuantity < 1;
+    const clampedQuantity = Math.max(1, Math.min(quantity, maxQuantity || 1));
+
+    const handleColorUpdate = (nextColor: ShirtColor) => {
+        if (selectedColor !== undefined) {
+            onColorChange?.(nextColor);
+            return;
+        }
+        setInternalColor(nextColor);
+    };
 
     const handleQuantityChange = (value: number) => {
         if (Number.isNaN(value)) {
@@ -44,7 +56,7 @@ export default function Checkout({ product }: CheckoutProps) {
             name: product.name,
             color,
             size,
-            quantity,
+            quantity: clampedQuantity,
             unitPrice: product.price,
             maxQuantity,
         });
@@ -52,21 +64,21 @@ export default function Checkout({ product }: CheckoutProps) {
     };
 
     return (
-        <Stack spacing={2} maxWidth={320}>
+        <Stack spacing={2} maxWidth={360}>
             <TextField
                 select
                 label="Color"
                 value={color}
                 onChange={(event) => {
                     const nextColor = event.target.value as ShirtColor;
-                    setColor(nextColor);
+                    handleColorUpdate(nextColor);
                     const nextMax = product.stockByColorAndSize[nextColor][size];
                     setQuantity((current) => Math.max(1, Math.min(current, nextMax || 1)));
                 }}
             >
                 {product.colors.map((currentColor) => (
                     <MenuItem key={currentColor} value={currentColor}>
-                        {currentColor}
+                        {currentColor.toUpperCase()}
                     </MenuItem>
                 ))}
             </TextField>
@@ -92,26 +104,26 @@ export default function Checkout({ product }: CheckoutProps) {
             <TextField
                 type="number"
                 label="Quantity"
-                value={quantity}
+                value={clampedQuantity}
                 onChange={(event) => handleQuantityChange(Number(event.target.value))}
                 inputProps={{ min: 1, max: maxQuantity || 1 }}
                 disabled={isOutOfStock}
             />
 
-            <Typography variant="body2">
-                {isOutOfStock
-                    ? "Out of stock for this color/size."
-                    : `${maxQuantity} item(s) available for ${color} / ${size}.`}
-            </Typography>
+            {isOutOfStock && (
+                <Typography variant="body2">
+                    Out of stock for this color/size.
+                </Typography>
+            )}
 
-            <Button variant="contained" onClick={handleAddToCart} disabled={isOutOfStock}>
+            <Button variant="contained" color="secondary" onClick={handleAddToCart} disabled={isOutOfStock}>
                 Add To Cart
             </Button>
             <Button variant="outlined" onClick={() => router.push("/cart")}>
                 Go To Cart
             </Button>
             {totalItems > 0 && (
-                <Typography variant="body2" color="success.main">
+                <Typography variant="body2" color="success.main" fontWeight={700}>
                     {totalItems} item(s) currently in your cart.
                 </Typography>
             )}
@@ -133,7 +145,7 @@ export default function Checkout({ product }: CheckoutProps) {
                     }
                 >
                     <AlertTitle>Added to cart</AlertTitle>
-                    {quantity} x {product.name} ({color}/{size}) added successfully.
+                    {clampedQuantity} x {product.name} ({color}/{size}) added successfully.
                 </Alert>
             </Snackbar>
         </Stack>

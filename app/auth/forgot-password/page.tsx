@@ -12,8 +12,11 @@ export default function ForgotPasswordPage() {
     });
 
     return (
-        <form action={formAction} className="w-full max-w-xs">
-            <Stack spacing={2}>
+        <form action={formAction} className="w-full">
+            <Stack spacing={2.2}>
+                <Alert severity="info" sx={{ mb: 1 }}>
+                    Enter your email and we will send a secure reset link.
+                </Alert>
                 <TextField
                     name="identifier"
                     label="Email"
@@ -24,9 +27,12 @@ export default function ForgotPasswordPage() {
                     required
                 />
                 {state.success && <Alert severity="success">{state.success}</Alert>}
-                <Button type="submit" variant="contained">
+                <Button type="submit" variant="contained" fullWidth>
                     Send Reset Link
                 </Button>
+                <Link component={NextLink} href="/privacy-notice" className="self-center">
+                    Privacy Notice
+                </Link>
                 <Link component={NextLink} href="/auth/login" className="self-center">
                     Back to Login
                 </Link>

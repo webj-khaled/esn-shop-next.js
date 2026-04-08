@@ -12,4 +12,5 @@ export interface Product {
     colors: ShirtColor[];
     sizes: ShirtSize[];
     stockByColorAndSize: Record<ShirtColor, Record<ShirtSize, number>>;
+    imagesByColor: Record<ShirtColor, string[]>;
 }

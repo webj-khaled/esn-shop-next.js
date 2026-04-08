@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+:root {
+    --esn-navy: #141a4a;
+    --esn-blue: #2e3192;
+    --esn-cyan: #00aeef;
+    --esn-magenta: #ec008c;
+    --esn-green: #7ac143;
+    --esn-background: #f4f6ff;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    color: var(--esn-navy);
+    background:
+        radial-gradient(circle at 12% 8%, rgba(0, 174, 239, 0.14) 0, transparent 24%),
+        radial-gradient(circle at 86% 6%, rgba(236, 0, 140, 0.12) 0, transparent 22%),
+        radial-gradient(circle at 70% 82%, rgba(122, 193, 67, 0.12) 0, transparent 22%),
+        linear-gradient(180deg, #fafbff 0%, var(--esn-background) 45%, #edf0ff 100%);
+    background-attachment: fixed;
+}
+
+a {
+    color: inherit;
+}
+
+.esn-fade-up {
+    animation: esn-fade-up 520ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .esn-fade-up {
+        animation: none;
+    }
+}
+
+@keyframes esn-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -25,6 +25,18 @@ const shirtProduct: Product = {
             XL: 6,
         },
     },
+    imagesByColor: {
+        black: [
+            "/products/classic-shirt/black-1.jpg",
+            "/products/classic-shirt/black-2.jpg",
+            "/products/classic-shirt/black-3.jpg",
+        ],
+        white: [
+            "/products/classic-shirt/white-1.jpg",
+            "/products/classic-shirt/white-2.jpg",
+            "/products/classic-shirt/white-3.jpg",
+        ],
+    },
 };
 
 export const productsCatalog: Product[] = [shirtProduct];

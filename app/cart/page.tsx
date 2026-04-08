@@ -7,15 +7,19 @@ import {
     Button,
     Card,
     CardContent,
+    Chip,
+    Link,
     MenuItem,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
+import NextLink from "next/link";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import checkout from "../checkout/actions/checkout";
 import confirmCheckout from "../checkout/actions/confirm-checkout";
+import { formatEuro } from "../common/util/currency";
 
 interface DeliveryAddress {
     fullName: string;
@@ -187,8 +191,11 @@ export default function CartPage() {
     };
 
     return (
-        <Stack spacing={3} marginY={4}>
-            <Typography variant="h3">Cart</Typography>
+        <Stack spacing={3} marginY={2} className="esn-fade-up">
+            <Stack spacing={1}>
+                <Chip label="Checkout" color="info" sx={{ width: "fit-content" }} />
+                <Typography variant="h3">Cart</Typography>
+            </Stack>
             {!items.length && <Typography>Your cart is empty.</Typography>}
 
             {statusMessage && <Alert severity={statusMessage.type}>{statusMessage.text}</Alert>}
@@ -196,7 +203,7 @@ export default function CartPage() {
             {isConfirming && <Alert severity="info">Finalizing your order...</Alert>}
 
             {items.map((item) => (
-                <Card key={`${item.productId}-${item.color}-${item.size}`}>
+                <Card key={`${item.productId}-${item.color}-${item.size}`} sx={{ overflow: "hidden" }}>
                     <CardContent>
                         <Stack direction={{ md: "row", xs: "column" }} spacing={2} alignItems={{ md: "center", xs: "stretch" }}>
                             <Box flex={1}>
@@ -205,7 +212,7 @@ export default function CartPage() {
                                     Color: {item.color} | Size: {item.size}
                                 </Typography>
                                 <Typography variant="body2">
-                                    ${item.unitPrice.toFixed(2)} each
+                                    {formatEuro(item.unitPrice)} each
                                 </Typography>
                             </Box>
                             <TextField
@@ -230,7 +237,7 @@ export default function CartPage() {
                                 ))}
                             </TextField>
                             <Typography minWidth={100}>
-                                ${(item.quantity * item.unitPrice).toFixed(2)}
+                                {formatEuro(item.quantity * item.unitPrice)}
                             </Typography>
                             <Button
                                 color="error"
@@ -251,7 +258,7 @@ export default function CartPage() {
             ))}
 
             {!!items.length && (
-                <Card>
+                <Card sx={{ overflow: "hidden" }}>
                     <CardContent>
                         <Stack spacing={2}>
                             <Typography variant="h5">Delivery Address</Typography>
@@ -332,18 +339,35 @@ export default function CartPage() {
             )}
 
             {!!items.length && (
-                <Stack spacing={1} alignItems="flex-end">
-                    <Typography variant="h6">Items: {totalCount}</Typography>
-                    <Typography variant="h5">Total: ${totalPrice.toFixed(2)}</Typography>
-                    {error && <Typography color="error">{error}</Typography>}
-                    <Button
-                        variant="contained"
-                        onClick={onCheckout}
-                        disabled={isLoading || isConfirming || !addressReady}
-                    >
-                        Checkout
-                    </Button>
-                </Stack>
+                <Card>
+                    <CardContent>
+                        <Stack spacing={1.2} alignItems={{ xs: "stretch", md: "flex-end" }}>
+                            <Typography variant="h6">Items: {totalCount}</Typography>
+                            <Typography variant="h5" color="secondary.main">
+                                Total: {formatEuro(totalPrice)}
+                            </Typography>
+                            <Typography variant="body2" textAlign={{ xs: "left", md: "right" }} color="text.secondary">
+                                By checking out, you agree to our{" "}
+                                <Link component={NextLink} href="/privacy-notice" underline="hover">
+                                    Privacy Notice
+                                </Link>{" "}
+                                and{" "}
+                                <Link component={NextLink} href="/impressum" underline="hover">
+                                    Impressum
+                                </Link>
+                                .
+                            </Typography>
+                            {error && <Typography color="error">{error}</Typography>}
+                            <Button
+                                variant="contained"
+                                onClick={onCheckout}
+                                disabled={isLoading || isConfirming || !addressReady}
+                            >
+                                Checkout
+                            </Button>
+                        </Stack>
+                    </CardContent>
+                </Card>
             )}
         </Stack>
     );

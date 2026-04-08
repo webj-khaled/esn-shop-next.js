@@ -10,7 +10,11 @@ interface ProductGridProps {
 
 export default function ProductsGrid({ products }: ProductGridProps) {
     return (
-        <Grid container spacing={3} sx={{ height: "85vh", overflow: "scroll" }}>
+        <Grid
+            container
+            spacing={{ xs: 2, md: 3 }}
+            sx={{ alignItems: "stretch" }}
+        >
             {products?.map((product) => (
                 <Grid key={product.id} size={{ sm: 6, lg: 4, xs: 12 }}>
                     <Product product={product} />

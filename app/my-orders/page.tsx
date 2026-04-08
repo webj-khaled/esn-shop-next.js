@@ -1,24 +1,24 @@
 import { Alert, Card, CardContent, Chip, Divider, Stack, Typography } from "@mui/material";
-import getOrders from "./actions/get-orders";
-import { OrderHistoryOrder } from "./actions/get-orders";
 import { getErrorMessage } from "../common/util/errors";
+import { OrderHistoryOrder } from "../orders/actions/get-orders";
+import getMyOrders from "./actions/get-my-orders";
 import { formatCurrency } from "../common/util/currency";
 
-export default async function OrdersPage() {
-    const maybeOrders = (await getOrders()) as unknown;
+export default async function MyOrdersPage() {
+    const maybeOrders = (await getMyOrders()) as unknown;
     const orders = Array.isArray(maybeOrders) ? (maybeOrders as OrderHistoryOrder[]) : [];
-    const loadError = Array.isArray(maybeOrders)
-        ? ""
-        : getErrorMessage(maybeOrders);
+    const loadError = Array.isArray(maybeOrders) ? "" : getErrorMessage(maybeOrders);
 
     return (
         <Stack spacing={3} marginY={2} className="esn-fade-up">
             <Stack spacing={1}>
-                <Chip label="Admin View" color="secondary" sx={{ width: "fit-content" }} />
-                <Typography variant="h3">Order History</Typography>
+                <Chip label="Your account" color="info" sx={{ width: "fit-content" }} />
+                <Typography variant="h3">My Orders</Typography>
             </Stack>
             {!!loadError && <Alert severity="error">{loadError}</Alert>}
-            {!loadError && !orders.length && <Typography>No completed orders yet.</Typography>}
+            {!loadError && !orders.length && (
+                <Typography>You have no completed orders yet.</Typography>
+            )}
 
             {orders.map((order) => (
                 <Card key={order.id} sx={{ overflow: "hidden" }}>
@@ -38,9 +38,6 @@ export default async function OrdersPage() {
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                                 Phone: {order.deliveryAddress.phone ?? "N/A"}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                Email: {order.customerEmail ?? "N/A"}
                             </Typography>
                             <Divider />
                             {order.items.map((item) => (
