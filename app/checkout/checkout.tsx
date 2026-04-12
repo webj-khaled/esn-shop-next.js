@@ -22,6 +22,7 @@ export default function Checkout({ product, selectedColor, onColorChange }: Chec
     const [size, setSize] = useState<ShirtSize>(product.sizes[0]);
     const [quantity, setQuantity] = useState(1);
     const [feedbackOpen, setFeedbackOpen] = useState(false);
+    const hasMultipleColors = product.colors.length > 1;
     const color = selectedColor ?? internalColor;
 
     const maxQuantity = useMemo(() => {
@@ -65,23 +66,25 @@ export default function Checkout({ product, selectedColor, onColorChange }: Chec
 
     return (
         <Stack spacing={2} maxWidth={360}>
-            <TextField
-                select
-                label="Color"
-                value={color}
-                onChange={(event) => {
-                    const nextColor = event.target.value as ShirtColor;
-                    handleColorUpdate(nextColor);
-                    const nextMax = product.stockByColorAndSize[nextColor][size];
-                    setQuantity((current) => Math.max(1, Math.min(current, nextMax || 1)));
-                }}
-            >
-                {product.colors.map((currentColor) => (
-                    <MenuItem key={currentColor} value={currentColor}>
-                        {currentColor.toUpperCase()}
-                    </MenuItem>
-                ))}
-            </TextField>
+            {hasMultipleColors && (
+                <TextField
+                    select
+                    label="Color"
+                    value={color}
+                    onChange={(event) => {
+                        const nextColor = event.target.value as ShirtColor;
+                        handleColorUpdate(nextColor);
+                        const nextMax = product.stockByColorAndSize[nextColor][size];
+                        setQuantity((current) => Math.max(1, Math.min(current, nextMax || 1)));
+                    }}
+                >
+                    {product.colors.map((currentColor) => (
+                        <MenuItem key={currentColor} value={currentColor}>
+                            {currentColor.toUpperCase()}
+                        </MenuItem>
+                    ))}
+                </TextField>
+            )}
 
             <TextField
                 select
@@ -112,7 +115,9 @@ export default function Checkout({ product, selectedColor, onColorChange }: Chec
 
             {isOutOfStock && (
                 <Typography variant="body2">
-                    Out of stock for this color/size.
+                    {hasMultipleColors
+                        ? "Out of stock for this color/size."
+                        : "Out of stock for this size."}
                 </Typography>
             )}
 

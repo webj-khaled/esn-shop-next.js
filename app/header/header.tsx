@@ -73,11 +73,11 @@ export default function Header({ logout, isAdmin }: HeaderProps) {
             const currentScrollY = window.scrollY;
             const scrollDelta = currentScrollY - lastScrollYRef.current;
 
-            if (currentScrollY <= 8) {
+            if (currentScrollY <= 4) {
                 setIsMobileBannerVisible(true);
-            } else if (scrollDelta > 5) {
+            } else if (scrollDelta > 2) {
                 setIsMobileBannerVisible(false);
-            } else if (scrollDelta < -5) {
+            } else if (scrollDelta < -2) {
                 setIsMobileBannerVisible(true);
             }
 
@@ -94,13 +94,19 @@ export default function Header({ logout, isAdmin }: HeaderProps) {
 
     return (
         <AppBar
+            data-main-header="true"
             position="sticky"
             elevation={0}
             color="transparent"
             sx={{
-                transition: "opacity 260ms ease, transform 260ms ease",
+                transition: isMobileBannerVisible
+                    ? "opacity 180ms ease-out, transform 180ms ease-out"
+                    : "opacity 90ms linear, transform 90ms linear",
                 opacity: { xs: isMobileBannerVisible ? 1 : 0, md: 1 },
-                transform: { xs: isMobileBannerVisible ? "translateY(0)" : "translateY(-18px)", md: "translateY(0)" },
+                transform: {
+                    xs: isMobileBannerVisible ? "translateY(0)" : "translateY(-140%)",
+                    md: "translateY(0)",
+                },
                 pointerEvents: { xs: isMobileBannerVisible ? "auto" : "none", md: "auto" },
             }}
         >
@@ -243,7 +249,9 @@ export default function Header({ logout, isAdmin }: HeaderProps) {
                         })}
                     </Box>
 
-                    {isAuthenticated && <Settings logout={logout} />}
+                    {isAuthenticated && (
+                        <Settings logout={logout} />
+                    )}
                 </Toolbar>
             </Container>
         </AppBar>

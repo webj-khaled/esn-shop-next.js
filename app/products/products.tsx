@@ -9,13 +9,13 @@ export default async function Products() {
         <Stack spacing={2.5}>
             <Stack spacing={1}>
                 <Chip
-                    label="Classic Shirt Collection"
+                    label="Salzburg Memory Collection"
                     color="secondary"
                     sx={{ width: "fit-content" }}
                 />
                 <Typography variant="h3">Shop Collection</Typography>
                 <Typography variant="body1" color="text.secondary">
-                    Every purchase supports the Erasmus Student Network spirit in Salzburg.
+                    Choose a piece that brings Salzburg memories back home with you, long after your exchange ends.
                 </Typography>
             </Stack>
 

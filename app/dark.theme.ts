@@ -13,6 +13,9 @@ const esn = {
     background: "#F4F6FF",
 };
 
+const titleFontFamily =
+    '"Monotype Corsiva", "Lucida Calligraphy", "Apple Chancery", "URW Chancery L", "Book Antiqua", serif';
+
 const darkTheme = createTheme({
     shape: {
         borderRadius: 16,
@@ -53,29 +56,30 @@ const darkTheme = createTheme({
     typography: {
         fontFamily: '"Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif',
         h1: {
-            fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+            fontFamily: titleFontFamily,
             fontWeight: 700,
             letterSpacing: "-0.02em",
         },
         h2: {
-            fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+            fontFamily: titleFontFamily,
             fontWeight: 700,
             letterSpacing: "-0.015em",
         },
         h3: {
-            fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+            fontFamily: titleFontFamily,
             fontWeight: 700,
             letterSpacing: "-0.01em",
         },
         h4: {
-            fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+            fontFamily: titleFontFamily,
             fontWeight: 700,
         },
         h5: {
-            fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+            fontFamily: titleFontFamily,
             fontWeight: 700,
         },
         h6: {
+            fontFamily: titleFontFamily,
             fontWeight: 700,
         },
         button: {

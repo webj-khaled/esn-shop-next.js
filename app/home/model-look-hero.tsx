@@ -1,7 +1,7 @@
 "use client";
 
-import { Box, Button, Stack } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Box, Stack } from "@mui/material";
+import { TouchEvent, useEffect, useRef, useState } from "react";
 
 interface HeroSlide {
   id: string;
@@ -28,6 +28,18 @@ const heroSlides: HeroSlide[] = [
 
 export default function ModelLookHero() {
   const [activeSlide, setActiveSlide] = useState(0);
+  const touchStartXRef = useRef<number | null>(null);
+  const touchStartYRef = useRef<number | null>(null);
+
+  const goToNextSlide = () => {
+    setActiveSlide((current) => (current + 1) % heroSlides.length);
+  };
+
+  const goToPreviousSlide = () => {
+    setActiveSlide((current) =>
+      current === 0 ? heroSlides.length - 1 : current - 1
+    );
+  };
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -37,20 +49,63 @@ export default function ModelLookHero() {
     return () => window.clearInterval(intervalId);
   }, []);
 
-  const handleScrollToShop = () => {
-    const section = document.getElementById("shop-selection");
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
+    touchStartXRef.current = event.touches[0]?.clientX ?? null;
+    touchStartYRef.current = event.touches[0]?.clientY ?? null;
+  };
+
+  const handleTouchEnd = (event: TouchEvent<HTMLDivElement>) => {
+    if (touchStartXRef.current === null) {
+      return;
+    }
+
+    const touchEndX = event.changedTouches[0]?.clientX;
+    if (typeof touchEndX !== "number") {
+      touchStartXRef.current = null;
+      return;
+    }
+
+    const touchEndY = event.changedTouches[0]?.clientY;
+    const deltaX = touchEndX - touchStartXRef.current;
+    const deltaY =
+      typeof touchEndY === "number" && typeof touchStartYRef.current === "number"
+        ? touchEndY - touchStartYRef.current
+        : 0;
+    const swipeThreshold = 34;
+    const isHorizontalSwipe =
+      Math.abs(deltaX) >= swipeThreshold && Math.abs(deltaX) > Math.abs(deltaY) + 8;
+
+    if (isHorizontalSwipe) {
+      if (deltaX > 0) {
+        goToPreviousSlide();
+      } else {
+        goToNextSlide();
+      }
+    }
+
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
+  };
+
+  const handleTouchCancel = () => {
+    touchStartXRef.current = null;
+    touchStartYRef.current = null;
   };
 
   return (
     <Stack spacing={2}>
       <Box
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
         sx={{
           position: "relative",
           minHeight: { xs: 520, md: 700 },
           borderRadius: 0,
           overflow: "hidden",
           boxShadow: "0 22px 46px rgba(20, 26, 74, 0.2)",
+          touchAction: "pan-y",
+          userSelect: "none",
         }}
       >
         {heroSlides.map((slide, index) => (
@@ -94,17 +149,6 @@ export default function ModelLookHero() {
             }}
           />
         ))}
-      </Stack>
-
-      <Stack alignItems="center">
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleScrollToShop}
-          sx={{ px: 3.5, py: 1.15, fontWeight: 700 }}
-        >
-          Buy Now
-        </Button>
       </Stack>
     </Stack>
   );

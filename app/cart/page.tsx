@@ -207,7 +207,21 @@ export default function CartPage() {
                     <CardContent>
                         <Stack direction={{ md: "row", xs: "column" }} spacing={2} alignItems={{ md: "center", xs: "stretch" }}>
                             <Box flex={1}>
-                                <Typography variant="h6">{item.name}</Typography>
+                                <Link
+                                    component={NextLink}
+                                    href={`/products/${item.productId}`}
+                                    underline="hover"
+                                    color="inherit"
+                                    sx={{
+                                        display: "inline-block",
+                                        fontSize: "1.125rem",
+                                        fontWeight: 700,
+                                        lineHeight: 1.3,
+                                        mb: 0.4,
+                                    }}
+                                >
+                                    {item.name}
+                                </Link>
                                 <Typography variant="body2">
                                     Color: {item.color} | Size: {item.size}
                                 </Typography>
