@@ -1,6 +1,13 @@
 "use client";
 
-import { PointerEvent as ReactPointerEvent, useContext, useMemo, useRef, useState } from "react";
+import {
+    PointerEvent as ReactPointerEvent,
+    useContext,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import Grid from "@mui/material/Grid";
 import {
     Alert,
@@ -36,6 +43,7 @@ interface ProductShowcaseProps {
 const mobileSurfaceBackground =
     "#ffffff";
 const mobileFooterHeightPx = 86;
+const mobileSheetPeekVh = 25;
 
 export default function ProductShowcase({ product }: ProductShowcaseProps) {
     const router = useRouter();
@@ -50,6 +58,7 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
     const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
     const swipeStartXRef = useRef<number | null>(null);
     const swipeStartYRef = useRef<number | null>(null);
+    const didSwipeMainImageRef = useRef(false);
 
     const hasMultipleColors = product.colors.length > 1;
     const currentImages = useMemo(
@@ -68,6 +77,10 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
         : 0;
     const isSelectedSizeOutOfStock = isSizeSelected && maxQuantity < 1;
     const isAddDisabled = !hasAnyStockForColor || (isSizeSelected && isSelectedSizeOutOfStock);
+
+    useLayoutEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }, [product.id]);
 
     const handleColorChange = (color: ShirtColor) => {
         setSelectedColor(color);
@@ -117,22 +130,14 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
         swipeStartYRef.current = null;
     };
 
-    const handleViewerPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-        if (event.pointerType === "mouse" && event.button !== 0) {
-            return;
-        }
-        swipeStartXRef.current = event.clientX;
-        swipeStartYRef.current = event.clientY;
-    };
-
-    const handleViewerPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const completeSwipeGesture = (endX: number, endY: number) => {
         if (swipeStartXRef.current === null || currentImages.length <= 1) {
             resetSwipeTracking();
-            return;
+            return false;
         }
 
-        const deltaX = event.clientX - swipeStartXRef.current;
-        const deltaY = event.clientY - (swipeStartYRef.current ?? event.clientY);
+        const deltaX = endX - swipeStartXRef.current;
+        const deltaY = endY - (swipeStartYRef.current ?? endY);
         const horizontalSwipe = Math.abs(deltaX) >= 42 && Math.abs(deltaX) > Math.abs(deltaY) + 10;
 
         if (horizontalSwipe) {
@@ -144,6 +149,47 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
         }
 
         resetSwipeTracking();
+        return horizontalSwipe;
+    };
+
+    const handlePrimaryImagePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+        if (event.pointerType === "mouse" && event.button !== 0) {
+            return;
+        }
+
+        didSwipeMainImageRef.current = false;
+        swipeStartXRef.current = event.clientX;
+        swipeStartYRef.current = event.clientY;
+    };
+
+    const handlePrimaryImagePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+        didSwipeMainImageRef.current = completeSwipeGesture(event.clientX, event.clientY);
+    };
+
+    const handlePrimaryImagePointerCancel = () => {
+        didSwipeMainImageRef.current = false;
+        resetSwipeTracking();
+    };
+
+    const handlePrimaryImageClick = () => {
+        if (didSwipeMainImageRef.current) {
+            didSwipeMainImageRef.current = false;
+            return;
+        }
+
+        openPhotoViewer(safeActiveImageIndex);
+    };
+
+    const handleViewerPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+        if (event.pointerType === "mouse" && event.button !== 0) {
+            return;
+        }
+        swipeStartXRef.current = event.clientX;
+        swipeStartYRef.current = event.clientY;
+    };
+
+    const handleViewerPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+        completeSwipeGesture(event.clientX, event.clientY);
     };
 
     const addVariantToCart = (size: ShirtSize) => {
@@ -216,14 +262,19 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
                         zIndex: 1,
                         overflow: "hidden",
                         backgroundColor: "#0d1438",
+                        touchAction: "pan-y",
+                        userSelect: "none",
                     }}
+                    onPointerDown={handlePrimaryImagePointerDown}
+                    onPointerUp={handlePrimaryImagePointerUp}
+                    onPointerCancel={handlePrimaryImagePointerCancel}
+                    onClick={handlePrimaryImageClick}
                 >
                     {activeImage ? (
                         <Box
                             component="img"
                             src={activeImage}
                             alt={`${product.name} in ${selectedColor}`}
-                            onClick={() => openPhotoViewer(safeActiveImageIndex)}
                             sx={{
                                 width: "100%",
                                 height: "100%",
@@ -341,7 +392,7 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
                     sx={{
                         position: "sticky",
                         zIndex: 2,
-                        mt: "77svh",
+                        mt: `${100 - mobileSheetPeekVh}svh`,
                         top: 0,
                         minHeight: `calc(100svh - ${mobileFooterHeightPx}px - env(safe-area-inset-bottom, 0px))`,
                         borderTopLeftRadius: 24,
@@ -753,6 +804,10 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
 
                                 {!!activeImage && (
                                     <Box
+                                        onPointerDown={handlePrimaryImagePointerDown}
+                                        onPointerUp={handlePrimaryImagePointerUp}
+                                        onPointerCancel={handlePrimaryImagePointerCancel}
+                                        onClick={handlePrimaryImageClick}
                                         sx={{
                                             width: "100%",
                                             aspectRatio: "4 / 5",
@@ -760,13 +815,14 @@ export default function ProductShowcase({ product }: ProductShowcaseProps) {
                                             borderRadius: 3,
                                             border: "1px solid rgba(46,49,146,0.16)",
                                             backgroundColor: "#0d1438",
+                                            touchAction: "pan-y",
+                                            userSelect: "none",
                                         }}
                                     >
                                         <Box
                                             component="img"
                                             src={activeImage}
                                             alt={`${product.name} in ${selectedColor}`}
-                                            onClick={() => openPhotoViewer(safeActiveImageIndex)}
                                             sx={{
                                                 width: "100%",
                                                 height: "100%",

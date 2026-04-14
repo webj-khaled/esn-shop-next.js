@@ -59,7 +59,7 @@ export default function Product({ product }: ProductProps) {
   };
 
   const openProductPage = () => {
-    router.push(`/products/${product.id}`);
+    router.push(`/products/${product.id}`, { scroll: true });
   };
 
   const handleCardClick = () => {
