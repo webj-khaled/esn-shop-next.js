@@ -2,92 +2,84 @@ import { Divider, Link, Stack, Typography } from "@mui/material";
 import { legalProfile } from "../legal/legal-profile";
 
 export default function ImpressumPage() {
-    const { company } = legalProfile;
+    const { association, representationRules, representatives, source } = legalProfile;
 
     return (
         <Stack spacing={2.5} marginY={4} maxWidth={900}>
             <Typography variant="h3">Impressum</Typography>
             <Typography variant="body2">
-                This page is a compliance template for Austrian websites. Replace all
-                fields starting with <strong>REPLACE_WITH_</strong> before going live.
+                Company information based on the official Austrian association register
+                extract dated {association.registerExtractDate}.
             </Typography>
 
             <Divider />
 
             <Typography variant="h5">Information According to Section 5 ECG</Typography>
             <Typography variant="body1">
-                {company.legalName} ({company.legalForm})
+                {association.legalName} ({association.legalForm})
             </Typography>
             <Typography variant="body1">
-                Registered seat: {company.seat}
+                Short name: {association.shortName}
             </Typography>
             <Typography variant="body1">
-                Address: {company.addressLine1}, {company.postalCode} {company.city},{" "}
-                {company.country}
-            </Typography>
-            <Typography variant="body1">Email: {company.contactEmail}</Typography>
-            <Typography variant="body1">Phone: {company.contactPhone}</Typography>
-            <Typography variant="body1">
-                Commercial register number: {company.commercialRegisterNumber}
+                ZVR number: {association.zvrNumber}
             </Typography>
             <Typography variant="body1">
-                Register court: {company.registerCourt}
+                Registered seat: {association.seat}
             </Typography>
-            <Typography variant="body1">VAT ID: {company.vatId}</Typography>
             <Typography variant="body1">
-                Supervisory authority: {company.supervisoryAuthority}
+                Address: {association.postalAddress}
             </Typography>
-            <Typography variant="body1">Chamber: {company.chamber}</Typography>
             <Typography variant="body1">
-                Applicable professional rules: {company.professionalRules}
+                Care of: {association.careOf}
+            </Typography>
+            <Typography variant="body1">
+                Date of establishment: {association.dateOfEstablishment}
+            </Typography>
+            <Typography variant="body1">
+                Registry authority: {association.registryAuthority}
             </Typography>
 
             <Divider />
 
-            <Typography variant="h5">Media Owner / Editorial Responsibility</Typography>
-            <Typography variant="body1">Media owner: {company.mediaOwner}</Typography>
+            <Typography variant="h5">Authorized Representatives</Typography>
+            {representatives.map((representative) => (
+                <Typography key={`${representative.role}-${representative.fullName}`} variant="body1">
+                    {representative.role}: {representative.fullName} ({representative.mandateFrom} to{" "}
+                    {representative.mandateTo})
+                </Typography>
+            ))}
+
+            <Divider />
+
+            <Typography variant="h5">Representation Rules</Typography>
+            {representationRules.map((rule) => (
+                <Typography key={rule} variant="body2">
+                    {rule}
+                </Typography>
+            ))}
+
+            <Divider />
+
+            <Typography variant="h5">Source</Typography>
             <Typography variant="body1">
-                Editorial responsibility: {company.editorResponsible}
+                Source document: {source.documentName}
             </Typography>
             <Typography variant="body2">
-                Managing director / legal representative: {company.managingDirector}
-            </Typography>
-
-            <Divider />
-
-            <Typography variant="h5">Consumer Dispute Resolution</Typography>
-            <Typography variant="body2">
-                We do not commit to alternative dispute resolution before a consumer
-                arbitration board unless legally required.
+                Issued at: {source.issuedAt}
             </Typography>
             <Typography variant="body2">
-                Note: The EU Online Dispute Resolution (ODR) platform was discontinued in
-                2025 by EU regulation; do not use outdated ODR links in your imprint.
+                Issuer: {source.issuer}
             </Typography>
-
-            <Divider />
-
-            <Typography variant="h5">Legal References</Typography>
             <Typography variant="body2">
-                Austrian government information on imprint obligations:
+                Signature verification:
                 {" "}
                 <Link
-                    href="https://www.usp.gv.at/themen/brancheninformationen/information-und-kommunikation/impressumspflicht-gemaess-para-24-mediengesetz.html"
+                    href={source.verificationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    USP - Impressumspflicht gemaess Paragraf 24 Mediengesetz
-                </Link>
-            </Typography>
-            <Typography variant="body2">
-                General e-commerce imprint guidance:
-                {" "}
-                <Link
-                    href="https://www.wko.at/internetrecht/informationspflichten-nach-dem-e-commerce-gesetz--dem-unte"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    WKO - Informationspflichten nach dem ECG
+                    {source.verificationUrl}
                 </Link>
             </Typography>
 
