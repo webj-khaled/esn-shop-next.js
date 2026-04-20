@@ -69,18 +69,6 @@ export default function PrivacyNoticePage() {
                     {source.verificationUrl}
                 </Link>
             </Typography>
-            <Typography variant="body2">
-                For complaints related to data protection in Austria:
-                {" "}
-                <Link
-                    href="https://dsb.gv.at/eingabe-an-die-dsb/beschwerde"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Datenschutzbehoerde (DSB) - Beschwerde
-                </Link>
-                .
-            </Typography>
 
             <Divider />
 

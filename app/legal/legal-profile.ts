@@ -15,8 +15,8 @@ export const legalProfile = {
     representationRules: [
         "The president represents the association externally.",
         "Written declarations are valid with the signature of the president.",
-        "In financial matters, the signature of the president or cashier is required.",
-        "Legal authorizations to represent or sign for the association can only be granted by the president, the deputy president, and the cashier.",
+        "In financial matters, the signature of the president or treasurer is required.",
+        "Legal authorizations to represent or sign for the association can only be granted by the president, the deputy president, and the treasurer.",
     ],
     representatives: [
         {
@@ -26,7 +26,7 @@ export const legalProfile = {
             mandateTo: "2026-11-12",
         },
         {
-            role: "Cashier",
+            role: "Treasurer",
             fullName: "Khaled Elfaham",
             mandateFrom: "2025-11-13",
             mandateTo: "2026-11-12",
